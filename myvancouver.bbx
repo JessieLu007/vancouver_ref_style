@@ -1,0 +1,147 @@
+% 2020-08 by Jessie Lu
+% revised from nejm and other votes from stackoverflow
+
+
+\ProvidesFile{myvancouver.bbx}
+\RequireBiber[2]
+\RequireBibliographyStyle{numeric}
+\RequirePackage{ifthen}
+
+
+\providetoggle{bbx:articledoi}
+\DeclareBibliographyOption[boolean]{articledoi}[true]{%
+	\settoggle{bbx:articledoi}{#1}}
+
+\providetoggle{bbx:articlein}
+\DeclareBibliographyOption[boolean]{articlein}[true]{%
+	\settoggle{bbx:articlein}{#1}}
+
+\providetoggle{bbx:printlang}
+\DeclareBibliographyOption[boolean]{printlang}[true]{%
+	\settoggle{bbx:printlang}{#1}}
+	
+
+%set options to biblatex
+\ExecuteBibliographyOptions
+{
+	isbn         = false ,
+	labelnumber  = true ,
+	minbibnames     = 6 ,
+	maxbibnames     = 6 ,
+	giveninits   = true ,
+	terseinits   = true ,
+	sorting      = none ,
+	%date         = year ,
+	articledoi   = true,
+	articlein    = false,
+	printlang    = false,
+}
+
+
+\AtBeginDocument{%
+\iftoggle{bbx:printlang}{}{
+	\DeclareStyleSourcemap{
+		\maps[datatype=bibtex]{
+			\map{\step[fieldset=language, null]}}
+			}
+		}%
+}
+
+%remove punctuation and space after initials -- require biber
+\renewrobustcmd*{\bibinitperiod}{}
+
+%separator printed before the pages field
+\renewcommand*{\bibpagespunct}{\addcolon}
+
+\DeclareFieldFormat{labelnumberwidth}{#1\adddot}
+
+%not formating pages
+\DeclareFieldFormat*{pages}{\mkcomprange{#1}}
+
+%not formated journaltitle
+\DeclareFieldFormat*{journaltitle}{#1\adddot}
+
+%not formated title
+\DeclareFieldFormat*{title}{#1}
+\DeclareFieldFormat*{booktitle}{#1}
+\DeclareFieldFormat*{url}{Available from: \url{#1}}
+
+
+%\AtEveryBibitem{\clearfield{doi}}
+% change the bad break for url and dois
+% add more to change the look of doi ,remove the period after doi
+\renewcommand*{\finentrypunct}{
+	\ifboolexpr{togl {bbx:doi} and not test {
+		\iffieldundef{doi}}}{}{\addperiod}
+}
+
+\DeclareFieldFormat*{doi}{%
+	\printtext{doi}\addcolon\space
+	\ifhyperref{
+		\href{https://doi.org/#1}{\nolinkurl{#1}}}{\nolinkurl{#1}}
+		}
+
+\setcounter{biburlnumpenalty}{100}
+\biburlnumskip=0mu plus 1mu minus 1mu\relax
+\urlstyle{same}
+
+
+%Set name format
+\DeclareNameAlias{default}{family-given}
+\DeclareNameAlias{sortname}{family-given}
+
+%remove comma between family name and given name
+\renewcommand*{\revsdnamepunct}{}
+
+%change the delimiter from default "and," to ", "
+\renewcommand*{\finalnamedelim}{\addcomma\addspace}
+
+%option articledoi -- no doi / eprint / url in article
+\letbibmacro{doi+eprint+url-use}{doi+eprint+url}
+
+
+\AtEveryCite{%
+\clearfield{labelmonth}%
+\clearfield{labelday}%
+\clearfield{labelendmonth}%
+\clearfield{labelendday}%
+}
+
+%no bibstring in in article:
+\renewbibmacro*{in:}{%
+\ifboolexpr{test {\ifentrytype{article}} and not togl {bbx:articlein}}
+  {}
+  {\printtext{\bibstring{in}\intitlepunct}}%
+}
+
+%put number in () 
+\renewbibmacro*{volume+number+eid}{%
+  \printfield{volume}%
+% \setunit*{\adddot}%
+  \iffieldundef{number}{}{\printfield[parens]{number}}
+  \setunit{\addcomma\space}%
+  \printfield{eid}
+  }
+
+%Order year;volume:page
+\renewbibmacro*{issue+date}{%
+  \printfield{issue}%
+  \setunit*{\addspace}%
+  \usebibmacro{date}%
+  \newunit}
+
+\renewbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \iffieldundef{series}
+  {}
+  {\newunit
+    \printfield{series}}%
+    \setunit*{\addspace}%
+    \usebibmacro{issue+date}%
+    \setunit*{\addsemicolon}
+    \usebibmacro{volume+number+eid}%
+    \setunit{\addcomma\space}%
+    \usebibmacro{issue}%
+  \newunit}
+\endinput
+
