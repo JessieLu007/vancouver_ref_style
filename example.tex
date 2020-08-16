@@ -1,0 +1,36 @@
+\documentclass[british]{article}
+\usepackage{csquotes}
+\usepackage[british]{babel}
+\usepackage[date=comp,style=myvancouver, backend=biber,dateabbrev=true]{biblatex}
+
+\makeatletter
+\DefineBibliographyExtras{\bbl@main@language}
+{
+	\protected\def\mkbibdatelong#1#2#3{%
+		%<year><month><day>
+		\iffieldbibstring{#1}{\bibstring{\thefield{#1}}}{\stripzeros{\thefield{#1}}}\iffieldundef{#2}{}{\nobreakspace}%
+		\iffieldundef{#2}
+		{}
+		{\mkbibmonth{\thefield{#2}}%
+			\iffieldundef{#3}{}{\space}}%
+		\iffieldundef{#3}
+		{}
+		{\thefield{#3}}%
+	}%
+}
+\makeatother
+
+\addbibresource{example.bib}
+
+\begin{document}
+	
+	Stanislaw Ulam was one of the original pioneers of Monte Carlo methods
+	\cite{Verwimp2020}.
+	
+	With a problem of dimension $d$, the computational expense of a random-walk
+	sampler is $O(d^2)$, whereas the cost of Hamiltonian Monte Carlo is roughly
+	$O(d^{5/4})$ \cite{Mnih2008}.
+	
+	\printbibliography
+	
+\end{document}
