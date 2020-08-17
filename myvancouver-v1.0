@@ -1,0 +1,229 @@
+% 2020-08 by Jessie Lu
+% revised from nejm and other votes from stackoverflow
+
+
+\ProvidesFile{myvancouver.bbx}
+\RequireBiber[2]
+\RequireBibliographyStyle{numeric}
+\RequirePackage{ifthen}
+
+
+\providetoggle{bbx:articledoi}
+\DeclareBibliographyOption[boolean]{articledoi}[true]{%
+	\settoggle{bbx:articledoi}{#1}}
+
+\providetoggle{bbx:articlein}
+\DeclareBibliographyOption[boolean]{articlein}[true]{%
+	\settoggle{bbx:articlein}{#1}}
+
+\providetoggle{bbx:printlang}
+\DeclareBibliographyOption[boolean]{printlang}[true]{%
+	\settoggle{bbx:printlang}{#1}}
+	
+
+%set options to biblatex
+\ExecuteBibliographyOptions
+{
+	isbn         = false ,
+	labelnumber  = true ,
+	minbibnames     = 6 ,
+	maxbibnames     = 6 ,
+	giveninits   = true ,
+	terseinits   = true ,
+	sorting      = none ,
+	%date         = year ,
+	articledoi   = true,
+	articlein    = false,
+	printlang    = false,
+}
+
+% Define the way month abbreviation looks like
+% in order to use this, need extra code in the tex file, marked as <month abbreviation>
+\DefineBibliographyStrings{british}{
+	january   = Jan ,
+	february  = Feb ,
+	march     = Mar ,
+	april     = Apr ,
+	may       = May ,
+	june      = Jun ,
+	july      = Jul ,
+	august    = Aug ,
+	september = Sep,
+	october   = Oct ,
+	november  = Nov ,
+	december  = Dec ,
+}
+
+% deal with title sentence case
+% deal with title cases
+\DeclareFieldFormat{titlecase}{\MakeTitleCase{#1}}
+
+\newrobustcmd{\MakeTitleCase}[1]{%
+\ifthenelse{\ifcurrentfield{booktitle}\OR\ifcurrentfield{booksubtitle}%
+\OR\ifcurrentfield{maintitle}\OR\ifcurrentfield{mainsubtitle}%
+\OR\ifcurrentfield{journaltitle}\OR\ifcurrentfield{journalsubtitle}%
+\OR\ifcurrentfield{issuetitle}\OR\ifcurrentfield{issuesubtitle}%
+\OR\ifentrytype{book}\OR\ifentrytype{mvbook}\OR\ifentrytype{bookinbook}%
+\OR\ifentrytype{booklet}\OR\ifentrytype{suppbook}%
+\OR\ifentrytype{collection}\OR\ifentrytype{mvcollection}%
+\OR\ifentrytype{suppcollection}\OR\ifentrytype{manual}%
+\OR\ifentrytype{periodical}\OR\ifentrytype{suppperiodical}%
+\OR\ifentrytype{proceedings}\OR\ifentrytype{mvproceedings}%
+\OR\ifentrytype{reference}\OR\ifentrytype{mvreference}%
+\OR\ifentrytype{report}\OR\ifentrytype{thesis}}
+{#1}
+{\MakeSentenceCase{#1}}}
+
+
+\AtBeginDocument{%
+\iftoggle{bbx:printlang}{}{
+	\DeclareStyleSourcemap{
+		\maps[datatype=bibtex]{
+			\map{\step[fieldset=language, null]}}
+			}
+		}%
+}
+
+%remove punctuation and space after initials -- require biber
+\renewrobustcmd*{\bibinitperiod}{}
+
+%separator printed before the pages field
+%\renewcommand*{\bibpagespunct}{\addcolon}
+\renewcommand*{\bibpagespunct}{
+	\ifthenelse{\ifentrytype{article}}
+		{\addcolon}
+		{\adddot\space p.\setunit}
+}
+
+\DeclareFieldFormat{labelnumberwidth}{#1\adddot}
+
+%not formating pages
+\DeclareFieldFormat*{pages}{\mkcomprange{#1}}
+
+%not formated journaltitle
+\DeclareFieldFormat*{journaltitle}{#1\adddot}
+
+%not formated title
+\DeclareFieldFormat*{title}{#1}
+\DeclareFieldFormat*{booktitle}{#1}
+\DeclareFieldFormat*{url}{Available from: \url{#1}}
+
+
+%\AtEveryBibitem{\clearfield{doi}}
+% change the bad break for url and dois
+% add more to change the look of doi ,remove the period after doi
+\renewcommand*{\finentrypunct}{
+	\ifboolexpr{togl {bbx:doi} and not test {
+		\iffieldundef{doi}}}{}{\addperiod}
+}
+
+\DeclareFieldFormat*{doi}{%
+	\printtext{doi}\addcolon\space
+	\ifhyperref{
+		\href{https://doi.org/#1}{\nolinkurl{#1}}}{\nolinkurl{#1}}
+		}
+
+\setcounter{biburlnumpenalty}{100}
+\biburlnumskip=0mu plus 1mu minus 1mu\relax
+\urlstyle{same}
+
+
+%Set name format
+\DeclareNameAlias{default}{family-given}
+\DeclareNameAlias{sortname}{family-given}
+
+%remove comma between family name and given name
+\renewcommand*{\revsdnamepunct}{}
+
+%change the delimiter from default "and," to ", "
+\renewcommand*{\finalnamedelim}{\addcomma\addspace}
+
+%option articledoi -- no doi / eprint / url in article
+\letbibmacro{doi+eprint+url-use}{doi+eprint+url}
+
+
+%================EDITORS===============================================================================
+%% ``(editor)'' or ``(editors)''
+\renewbibmacro*{byeditor+others}{%
+\ifnameundef{editor}
+{}
+{\printnames[byeditor]{editor}%
+\setunit{\addcomma\addspace}%
+\usebibmacro{byeditor+othersstrg}%
+\clearname{editor}%
+\newunit}%
+\usebibmacro{byeditorx}%
+\usebibmacro{bytranslator+others}
+\setunit{\addcolon\space}
+}
+\xpatchbibmacro{byeditor+othersstrg}{\printtext}{}{}
+
+
+%%  ``(editor)'' or ``(editors)'' instead of ``(ed. by)''
+\DefineBibliographyStrings{english}{%
+byeditor = {editor},%
+byeditor = {editors},%
+issue  = {\isdot\lowercase{i}ss\adddot},%
+}
+
+%% booktitle after editors
+\renewbibmacro*{maintitle+booktitle}{%
+	\iffieldundef{maintitle}
+	{}
+	{\usebibmacro{maintitle}%
+	\newunit\newblock
+	\iffieldundef{volume}
+	{}
+	{\printfield{volume}%
+	\printfield{part}%
+	\setunit{\addcolon\space}}}%
+	%\usebibmacro{booktitle}%
+\newunit}	
+%================EDITORS==============================================================================================================
+
+
+\AtEveryCite{%
+	\clearfield{labelmonth}%
+	\clearfield{labelday}%
+	\clearfield{labelendmonth}%
+	\clearfield{labelendday}%
+}
+
+%no bibstring in in article:
+\renewbibmacro*{in:}{%
+\ifboolexpr{test {\ifentrytype{article}} and not togl {bbx:articlein}}
+  {}
+  {\printtext{\bibstring{in}\intitlepunct}}%
+}
+
+%put number in () 
+\renewbibmacro*{volume+number+eid}{%
+  \printfield{volume}%
+% \setunit*{\adddot}%
+  \iffieldundef{number}{}{\printfield[parens]{number}}
+  \setunit{\addcomma\space}%
+  \printfield{eid}
+  }
+
+%Order year;volume:page
+\renewbibmacro*{issue+date}{%
+  \printfield{issue}%
+  \setunit*{\addspace}%
+  \usebibmacro{date}%
+  \newunit}
+
+\renewbibmacro*{journal+issuetitle}{%
+  \usebibmacro{journal}%
+  \iffieldundef{series}
+  {}
+  {\newunit
+    \printfield{series}}%
+    \setunit*{\addspace}%
+    \usebibmacro{issue+date}%
+    \setunit*{\addsemicolon}
+    \usebibmacro{volume+number+eid}%
+    \setunit{\addcomma\space}%
+    \usebibmacro{issue}%
+  \newunit}
+\endinput
+
