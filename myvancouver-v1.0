@@ -143,7 +143,7 @@
 
 
 %================EDITORS===============================================================================
-%% ``(editor)'' or ``(editors)''
+%% ``editor'' or ``editors''
 \renewbibmacro*{byeditor+others}{%
 \ifnameundef{editor}
 {}
@@ -167,18 +167,56 @@ issue  = {\isdot\lowercase{i}ss\adddot},%
 }
 
 %% booktitle after editors
-\renewbibmacro*{maintitle+booktitle}{%
-	\iffieldundef{maintitle}
-	{}
-	{\usebibmacro{maintitle}%
+\DeclareBibliographyDriver{inproceedings}{%
+	\usebibmacro{bibindex}%
+	\usebibmacro{begentry}%
+	\usebibmacro{author/translator+others}%
+	\setunit{\printdelim{nametitledelim}}\newblock
+	\usebibmacro{title}%
+	\newunit
+	\printlist{language}%
 	\newunit\newblock
-	\iffieldundef{volume}
-	{}
-	{\printfield{volume}%
-	\printfield{part}%
-	\setunit{\addcolon\space}}}%
-	%\usebibmacro{booktitle}%
-\newunit}	
+	\usebibmacro{byauthor}%
+	\newunit\newblock
+	\usebibmacro{in:}%
+	\usebibmacro{byeditor+others}%
+	\setunit{\addcomma\space}\newblock
+	\usebibmacro{maintitle+booktitle}%
+	\newunit\newblock
+	\usebibmacro{event+venue+date}%
+	\newunit\newblock
+	\iffieldundef{maintitle}
+		{\printfield{volume}%
+		\printfield{part}}
+		{}%
+	\newunit
+	\printfield{volumes}%
+	\newunit\newblock
+	\usebibmacro{series+number}%
+	\newunit\newblock
+	\printfield{note}%
+	\newunit\newblock
+	\printlist{organization}%
+	\newunit
+	\usebibmacro{publisher+location+date}%
+	\newunit\newblock
+	\usebibmacro{chapter+pages}%
+	\newunit\newblock
+	\iftoggle{bbx:isbn}
+	{\printfield{isbn}}
+	{}%
+	\newunit\newblock
+	\usebibmacro{doi+eprint+url}%
+	\newunit\newblock
+	\usebibmacro{addendum+pubstate}%
+	\setunit{\bibpagerefpunct}\newblock
+	\usebibmacro{pageref}%
+	\newunit\newblock
+	\iftoggle{bbx:related}
+		{\usebibmacro{related:init}%
+		\usebibmacro{related}}
+		{}%
+	\usebibmacro{finentry}}
 %================EDITORS==============================================================================================================
 
 
