@@ -10,48 +10,48 @@
 
 \providetoggle{bbx:articledoi}
 \DeclareBibliographyOption[boolean]{articledoi}[true]{%
-	\settoggle{bbx:articledoi}{#1}}
+\settoggle{bbx:articledoi}{#1}}
 
 \providetoggle{bbx:articlein}
 \DeclareBibliographyOption[boolean]{articlein}[true]{%
-	\settoggle{bbx:articlein}{#1}}
+\settoggle{bbx:articlein}{#1}}
 
 \providetoggle{bbx:printlang}
 \DeclareBibliographyOption[boolean]{printlang}[true]{%
-	\settoggle{bbx:printlang}{#1}}
-	
+\settoggle{bbx:printlang}{#1}}
+
 
 %set options to biblatex
 \ExecuteBibliographyOptions
 {
-	isbn         = false ,
-	labelnumber  = true ,
-	minbibnames     = 6 ,
-	maxbibnames     = 6 ,
-	giveninits   = true ,
-	terseinits   = true ,
-	sorting      = none ,
-	%date         = year ,
-	articledoi   = true,
-	articlein    = false,
-	printlang    = false,
+isbn         = false ,
+labelnumber  = true ,
+minbibnames     = 6 ,
+maxbibnames     = 6 ,
+giveninits   = true ,
+terseinits   = true ,
+sorting      = none ,
+%date         = year ,
+articledoi   = true,
+articlein    = false,
+printlang    = false,
 }
 
 % Define the way month abbreviation looks like
 % in order to use this, need extra code in the tex file, marked as <month abbreviation>
 \DefineBibliographyStrings{british}{
-	january   = Jan ,
-	february  = Feb ,
-	march     = Mar ,
-	april     = Apr ,
-	may       = May ,
-	june      = Jun ,
-	july      = Jul ,
-	august    = Aug ,
-	september = Sep,
-	october   = Oct ,
-	november  = Nov ,
-	december  = Dec ,
+january   = Jan ,
+february  = Feb ,
+march     = Mar ,
+april     = Apr ,
+may       = May ,
+june      = Jun ,
+july      = Jul ,
+august    = Aug ,
+september = Sep,
+october   = Oct ,
+november  = Nov ,
+december  = Dec ,
 }
 
 % deal with title sentence case
@@ -77,11 +77,11 @@
 
 \AtBeginDocument{%
 \iftoggle{bbx:printlang}{}{
-	\DeclareStyleSourcemap{
-		\maps[datatype=bibtex]{
-			\map{\step[fieldset=language, null]}}
-			}
-		}%
+\DeclareStyleSourcemap{
+\maps[datatype=bibtex]{
+\map{\step[fieldset=language, null]}}
+}
+}%
 }
 
 %remove punctuation and space after initials -- require biber
@@ -90,10 +90,8 @@
 %separator printed before the pages field
 %\renewcommand*{\bibpagespunct}{\addcolon}
 \renewcommand*{\bibpagespunct}{
-	\ifthenelse{\ifentrytype{article}}
-		{\addcolon}
-		{\adddot\space p.\setunit}
-}
+\ifthenelse{\ifentrytype{article}}
+	{\newunit\addcolon}{\adddot\space p.\setunit}}
 
 \DeclareFieldFormat{labelnumberwidth}{#1\adddot}
 
@@ -113,15 +111,15 @@
 % change the bad break for url and dois
 % add more to change the look of doi ,remove the period after doi
 \renewcommand*{\finentrypunct}{
-	\ifboolexpr{togl {bbx:doi} and not test {
-		\iffieldundef{doi}}}{}{\addperiod}
+\ifboolexpr{togl {bbx:doi} and not test {
+\iffieldundef{doi}}}{}{\addperiod}
 }
 
 \DeclareFieldFormat*{doi}{%
-	\printtext{doi}\addcolon\space
-	\ifhyperref{
-		\href{https://doi.org/#1}{\nolinkurl{#1}}}{\nolinkurl{#1}}
-		}
+\printtext{doi}\addcolon\space
+\ifhyperref{
+\href{https://doi.org/#1}{\nolinkurl{#1}}}{\nolinkurl{#1}}
+}
 
 \setcounter{biburlnumpenalty}{100}
 \biburlnumskip=0mu plus 1mu minus 1mu\relax
@@ -148,7 +146,7 @@
 \ifnameundef{editor}
 {}
 {\printnames[byeditor]{editor}%
-\setunit{\addcomma\addspace}%
+\setunit{\addcomma\addspace}% this only change the punctuation after the last editor name
 \usebibmacro{byeditor+othersstrg}%
 \clearname{editor}%
 \newunit}%
@@ -168,100 +166,109 @@ issue  = {\isdot\lowercase{i}ss\adddot},%
 
 %% booktitle after editors
 \DeclareBibliographyDriver{inproceedings}{%
-	\usebibmacro{bibindex}%
-	\usebibmacro{begentry}%
-	\usebibmacro{author/translator+others}%
-	\setunit{\printdelim{nametitledelim}}\newblock
-	\usebibmacro{title}%
-	\newunit
-	\printlist{language}%
-	\newunit\newblock
-	\usebibmacro{byauthor}%
-	\newunit\newblock
-	\usebibmacro{in:}%
-	\usebibmacro{byeditor+others}%
-	\setunit{\adddot\space}\newblock
-	\usebibmacro{maintitle+booktitle}%
-	\newunit\newblock
-	\usebibmacro{event+venue+date}%
-	\newunit\newblock
-	\iffieldundef{maintitle}
-		{\printfield{volume}%
-		\printfield{part}}
-		{}%
-	\newunit
-	\printfield{volumes}%
-	\newunit\newblock
-	\usebibmacro{series+number}%
-	\newunit\newblock
-	\printfield{note}%
-	\newunit\newblock
-	\printlist{organization}%
-	\newunit
-	\usebibmacro{publisher+location+date}%
-	\newunit\newblock
-	\usebibmacro{chapter+pages}%
-	\newunit\newblock
-	\iftoggle{bbx:isbn}
-	{\printfield{isbn}}
-	{}%
-	\newunit\newblock
-	\usebibmacro{doi+eprint+url}%
-	\newunit\newblock
-	\usebibmacro{addendum+pubstate}%
-	\setunit{\bibpagerefpunct}\newblock
-	\usebibmacro{pageref}%
-	\newunit\newblock
-	\iftoggle{bbx:related}
-		{\usebibmacro{related:init}%
-		\usebibmacro{related}}
-		{}%
-	\usebibmacro{finentry}}
-%================EDITORS==============================================================================================================
+\usebibmacro{bibindex}%
+\usebibmacro{begentry}%
+\usebibmacro{author/translator+others}%
+\setunit{\printdelim{nametitledelim}}\newblock
+\usebibmacro{title}%
+\newunit
+\printlist{language}%
+\newunit\newblock
+\usebibmacro{byauthor}%
+\newunit\newblock
+\usebibmacro{in:}%
+\usebibmacro{byeditor+others}%
+\setunit{\adddot\space}\newblock
+\usebibmacro{maintitle+booktitle}%
+\newunit\newblock
+\usebibmacro{event+venue+date}%
+\newunit\newblock
+\iffieldundef{maintitle}
+{\printfield{volume}%
+\printfield{part}}
+{}%
+\newunit
+\printfield{volumes}%
+\newunit\newblock
+\usebibmacro{series+number}%
+\newunit\newblock
+\printfield{note}%
+\newunit\newblock
+\printlist{organization}%
+\newunit
+\usebibmacro{publisher+location+date}%
+\newunit\newblock
+\usebibmacro{chapter+pages}%
+\newunit\newblock
+\iftoggle{bbx:isbn}
+{\printfield{isbn}}
+{}%
+\newunit\newblock
+\usebibmacro{doi+eprint+url}%
+\newunit\newblock
+\usebibmacro{addendum+pubstate}%
+\setunit{\bibpagerefpunct}\newblock
+\usebibmacro{pageref}%
+\newunit\newblock
+\iftoggle{bbx:related}
+{\usebibmacro{related:init}%
+\usebibmacro{related}}
+{}%
+\usebibmacro{finentry}}
+%================EDITORS=======================================================================================================================
 
 
 \AtEveryCite{%
-	\clearfield{labelmonth}%
-	\clearfield{labelday}%
-	\clearfield{labelendmonth}%
-	\clearfield{labelendday}%
+\clearfield{labelmonth}%
+\clearfield{labelday}%
+\clearfield{labelendmonth}%
+\clearfield{labelendday}%
 }
+
+
+% vomume numbers prefix from Vol. to vol.+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+\DefineBibliographyStrings{english}{
+	volume = {\lowercase{vol}\adddot},
+	volumes = {\lowercase{vol}\adddot},
+	jourvol = {\lowercase{vol}\adddot},
+	issue  = {\isdot\lowercase{i}ss\adddot},%
+}
+
 
 %no bibstring in in article:
 \renewbibmacro*{in:}{%
 \ifboolexpr{test {\ifentrytype{article}} and not togl {bbx:articlein}}
-  {}
-  {\printtext{\bibstring{in}\intitlepunct}}%
+{}
+{\printtext{\bibstring{in}\intitlepunct}}%
 }
 
 %put number in () 
 \renewbibmacro*{volume+number+eid}{%
-  \printfield{volume}%
+\printfield{volume}%
 % \setunit*{\adddot}%
-  \iffieldundef{number}{}{\printfield[parens]{number}}
-  \setunit{\addcomma\space}%
-  \printfield{eid}
-  }
+\iffieldundef{number}{}{\printfield[parens]{number}}
+\setunit{\addcomma\space}%
+\printfield{eid}
+}
 
 %Order year;volume:page
 \renewbibmacro*{issue+date}{%
-  \printfield{issue}%
-  \setunit*{\addspace}%
-  \usebibmacro{date}%
-  \newunit}
+\printfield{issue}%
+\setunit*{\addspace}%
+\usebibmacro{date}%
+\newunit}
 
 \renewbibmacro*{journal+issuetitle}{%
-  \usebibmacro{journal}%
-  \iffieldundef{series}
-  {}
-  {\newunit
-    \printfield{series}}%
-    \setunit*{\addspace}%
-    \usebibmacro{issue+date}%
-    \setunit*{\addsemicolon}
-    \usebibmacro{volume+number+eid}%
-    \setunit{\addcomma\space}%
-    \usebibmacro{issue}%
-  \newunit}
+\usebibmacro{journal}%
+\iffieldundef{series}
+{}
+{\newunit
+\printfield{series}}%
+\setunit*{\addspace}%
+\usebibmacro{issue+date}%
+\setunit*{\addsemicolon}
+\usebibmacro{volume+number+eid}%
+\setunit{\addcomma\space}%
+\usebibmacro{issue}%
+\newunit}
 \endinput
-
