@@ -180,7 +180,7 @@ issue  = {\isdot\lowercase{i}ss\adddot},%
 	\newunit\newblock
 	\usebibmacro{in:}%
 	\usebibmacro{byeditor+others}%
-	\setunit{\addcomma\space}\newblock
+	\setunit{\adddot\space}\newblock
 	\usebibmacro{maintitle+booktitle}%
 	\newunit\newblock
 	\usebibmacro{event+venue+date}%
