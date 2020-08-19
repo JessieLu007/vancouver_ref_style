@@ -1,0 +1,95 @@
+% use the biblatex to organize reference for a change ICMJE aka Vancouver
+\documentclass[british]{article}
+\usepackage[british]{babel}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xpatch}
+\usepackage[date=comp,style=myvancouver, backend=biber,dateabbrev=true]{biblatex}%nejm
+%\usepackage{hyperref}
+\usepackage{amsmath}
+\usepackage{url}
+% makeatletter and makeatother surrounde the renewcommand@biblabel
+\usepackage{csquotes}
+
+% this lines fixes my two problems, first the abbreviation of the month, 
+% and second ommit the dot after the month.
+\DefineBibliographyStrings{british}{
+	january   = Jan ,
+	february  = Feb ,
+	march     = Mar ,
+	april     = Apr ,
+	may       = May ,
+	june      = Jun ,
+	july      = Jul ,
+	august    = Aug ,
+	september = Sep,
+	october   = Oct ,
+	november  = Nov ,
+	december  = Dec ,
+}
+
+\makeatletter
+\DefineBibliographyExtras{\bbl@main@language}
+{
+	\protected\def\mkbibdatelong#1#2#3{%
+		%<year><month><day>
+		\iffieldbibstring{#1}{\bibstring{\thefield{#1}}}{\stripzeros{\thefield{#1}}}\iffieldundef{#2}{}{\nobreakspace}%
+		\iffieldundef{#2}
+		{}
+		{\mkbibmonth{\thefield{#2}}%
+			\iffieldundef{#3}{}{\space}}%
+		\iffieldundef{#3}
+		{}
+		{\thefield{#3}}%
+	}%
+}
+\makeatother
+% now is the question of removing the dot after the month 
+
+
+\addbibresource{reference.bib}
+\setlength{\emergencystretch}{.5em}
+
+\begin{document}
+
+	1. \cite{1Hirschberg1988}.
+	2. \cite{2Xu2000}
+	3. \cite{3Bengio2003}
+	4. \cite{4Mnih2008}.
+	5. \cite{5Collobert2011}.
+	6. \cite{6Mikolov2013}.
+	7. \cite{7Bengio2009}.
+	8. \cite{8Pennington2014}.
+	9. \cite{9Srivastava2014}.
+	10. \cite{10Polyak1964}.\\	
+	11. \cite{11Zeiler2012}.
+	12. \cite{12Polyak1992}.
+	13. \cite{13Kingma2014}.
+	14. \cite{14Hochreiter1997}.
+	15. \cite{15Zaremba2014}.
+	16. \cite{16Gal2016}.
+	17. \cite{17Billa2018}.
+	18. \cite{18Song2019}.\\
+	19. \cite{19Marcus1993}.
+	20. \cite{20Duchi2011}.	
+	21. \cite{21Polyak1990}.
+	22. \cite{22Ruppert1988}.
+	23. \cite{23Samuel2017}.
+	24. \cite{24Goyal2017}.
+	25. \cite{25Yang2017}.
+	26. \cite{26Pietron2019}.\\
+	27. \cite{27Wang2020}.
+	28. \cite{28Verwimp2020}.	
+	29. \cite{29Qian1999}.
+	30. \cite{30Cavalieri2016}.
+	31. \cite{31Marcus1993}.
+	32. \cite{32Shuang2019}.
+	33. \cite{33Grave2016}.
+	34. \cite{34Inan2016}.\\
+	35. \cite{35Merity2016}.
+	36. \cite{36Mikolov2010}.
+
+
+\printbibliography
+\end{document}
+
